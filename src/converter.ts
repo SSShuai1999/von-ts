@@ -1,28 +1,27 @@
 import { PrimitivesStr, Special, StrToPrimitives } from "./helper";
 
-type ConverterCatch<A, B> = {
-  to: A;
-  from: B;
+export type ConverterScope<A> = {
+  output: A;
 };
 
-type CastRetType<A, B> = A extends Special
+export type CastRetType<A, B> = A extends Special
   ? B
   : A extends PrimitivesStr
   ? StrToPrimitives<A>
-  : { A: A; B: B };
+  : never;
 
 export class Converter<
-  T extends { to: any },
-  Catch extends ConverterCatch<T["to"], any> = ConverterCatch<T["to"], any>,
+  T extends { output: unknown },
+  Scope extends ConverterScope<T["output"]> = ConverterScope<T["output"]>,
 > {
-  private to: Catch["to"];
+  private output: Scope["output"];
 
-  constructor({ to }: T) {
-    this.to = to;
+  constructor({ output }: T) {
+    this.output = output;
   }
 
-  cast<B>(from: B): CastRetType<Catch["to"], B> {
-    switch (this.to) {
+  cast<B>(from: B): CastRetType<Scope["output"], B> {
+    switch (this.output) {
       case "string":
         return String(from) as any;
       case "number":

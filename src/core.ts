@@ -4,10 +4,10 @@ import { DefProps, PrimitivesStr } from "./helper";
 export function def<T extends DefProps>(
   value: T,
 ): Converter<{
-  to: T;
+  output: T;
 }> {
   return new Converter({
-    to: value,
+    output: value,
   });
 }
 
