@@ -86,6 +86,7 @@ export type StrPrimitivesMap = {
   number: number;
   string: string;
   boolean: boolean;
+  // literal: boolean;
 };
 
 export type PrimitivesStr = keyof StrPrimitivesMap;
@@ -93,3 +94,7 @@ export type PrimitivesStr = keyof StrPrimitivesMap;
 export type FalsyValue = undefined | null;
 
 export type StrToPrimitives<T extends PrimitivesStr> = StrPrimitivesMap[T];
+
+export type Special = "literal";
+
+export type DefProps = PrimitivesStr | Special;

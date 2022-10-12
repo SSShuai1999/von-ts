@@ -1,23 +1,35 @@
-import { PrimitivesStr, StrToPrimitives } from "./helper";
+import { PrimitivesStr, Special, StrToPrimitives } from "./helper";
 
-type ConverterCatch = {
-  to: PrimitivesStr;
+type ConverterCatch<A, B> = {
+  to: A;
+  from: B;
 };
 
-export class Converter<Catch extends ConverterCatch> {
-  private to: PrimitivesStr;
+type CastRetType<A, B> = A extends Special
+  ? B
+  : A extends PrimitivesStr
+  ? StrToPrimitives<A>
+  : { A: A; B: B };
 
-  constructor({ to }: any) {
+export class Converter<
+  T extends { to: any },
+  Catch extends ConverterCatch<T["to"], any> = ConverterCatch<T["to"], any>,
+> {
+  private to: Catch["to"];
+
+  constructor({ to }: T) {
     this.to = to;
   }
 
-  cast<From>(from: From): StrToPrimitives<Catch["to"]> {
+  cast<B>(from: B): CastRetType<Catch["to"], B> {
     switch (this.to) {
       case "string":
         return String(from) as any;
       case "number":
         return Number(from) as any;
       case "boolean":
+        return Boolean(from) as any;
+      case "literal":
         return Boolean(from) as any;
       default:
         throw new Error("not found");

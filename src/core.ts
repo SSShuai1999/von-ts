@@ -1,7 +1,7 @@
 import { Converter } from "./converter";
-import { PrimitivesStr, StrToPrimitives } from "./helper";
+import { DefProps, PrimitivesStr } from "./helper";
 
-export function def<T extends PrimitivesStr>(
+export function def<T extends DefProps>(
   value: T,
 ): Converter<{
   to: T;
