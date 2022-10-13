@@ -1,4 +1,4 @@
-import { type ConverterScope, Converter } from "./converter";
+import { Converter } from "./converter/converter";
 
 export function to_string(): Converter<{ type: "string" }> {
   return new Converter({

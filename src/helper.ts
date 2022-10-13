@@ -96,12 +96,12 @@ export type StrPrimitivesMap = {
   boolean: boolean;
 };
 
-export type PrimitivesStr = keyof StrPrimitivesMap;
+export type PrimitivesKeys = keyof StrPrimitivesMap;
 
 export type FalsyValue = undefined | null;
 
-export type StrToPrimitives<T extends PrimitivesStr> = StrPrimitivesMap[T];
+export type StrToPrimitives<T extends PrimitivesKeys> = StrPrimitivesMap[T];
 
 export type Special = "literal";
 
-export type DefProps = PrimitivesStr | Special;
+export type DefProps = PrimitivesKeys | Special;
