@@ -1,21 +1,5 @@
-import { StrToPrimitives } from "../helper";
-import {
-  CastRetType,
-  ConverterScope,
-  NarrowInputOutput,
-  Pattern,
-} from "./type";
-
-export function pattern<T extends ConverterScope<unknown, unknown>>(
-  props: T,
-): Converter<T> {
-  const { input, output } = props;
-
-  return new Converter({
-    input,
-    output,
-  } as any);
-}
+import { GetPrimitivesByKey } from "../helper";
+import { CastRetType, ConverterScope, Pattern, PatternIOType } from "./type";
 
 export class Converter<Scope extends ConverterScope<unknown, unknown>> {
   private _input: Scope["input"] = undefined;
@@ -26,23 +10,24 @@ export class Converter<Scope extends ConverterScope<unknown, unknown>> {
     this._type = props.type;
   }
 
-  public pattern<Value extends NarrowInputOutput<Scope>>(
-    value: Value,
-  ): Converter<Pattern<Scope, Value>> {
-    this._input = value.input;
-    this._output = value.output;
+  public pattern<Input extends PatternIOType, Output extends PatternIOType>(
+    input: Input,
+    output: Output,
+  ): Converter<Pattern<Scope, Input, Output>> {
+    this._input = input;
+    this._output = output;
 
     return this as any;
   }
 
-  public cast<Origin extends StrToPrimitives<Scope["type"]>>(
+  public cast<Origin extends GetPrimitivesByKey<Scope["type"]>>(
     origin: Origin,
   ): CastRetType<Origin, Scope> {
     const input = this.getInp() as any[];
     const output = this.getOut() as any[];
     const idx = input.findIndex((item) => item === origin);
 
-    if (!idx) {
+    if (idx < 0) {
       return origin as CastRetType<Origin, Scope>;
     }
 

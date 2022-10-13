@@ -100,7 +100,7 @@ export type PrimitivesKeys = keyof StrPrimitivesMap;
 
 export type FalsyValue = undefined | null;
 
-export type StrToPrimitives<T extends PrimitivesKeys> = StrPrimitivesMap[T];
+export type GetPrimitivesByKey<T extends PrimitivesKeys> = StrPrimitivesMap[T];
 
 export type Special = "literal";
 
