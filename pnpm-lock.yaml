@@ -15,10 +15,13 @@ importers:
       esno: ^0.16.3
       pnpm: ^7.5.0
       rimraf: ^3.0.2
+      ts-toolbelt: ^9.6.0
       typescript: ^4.8.4
       unbuild: ^0.7.4
       vite: ^2.9.14
       vitest: ^0.18.0
+    dependencies:
+      ts-toolbelt: 9.6.0
     devDependencies:
       '@antfu/eslint-config': 0.25.2_z4bbprzjrhnsfa24uvmcbu7f5q
       '@antfu/ni': 0.16.3
@@ -3380,6 +3383,10 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /ts-toolbelt/9.6.0:
+    resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
+    dev: false
 
   /tsconfig-paths/3.14.1:
     resolution: {integrity: sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==}

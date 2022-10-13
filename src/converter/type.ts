@@ -1,6 +1,6 @@
-import { Merge, PrimitivesKeys, GetPrimitivesByKey } from "../helper";
+import { PrimitivesKeys, GetPrimitivesByKey } from "../helper";
 import { ArrayType } from "../typings";
-import { type String, List } from "ts-toolbelt";
+import { type String, type List, type Object } from "ts-toolbelt";
 
 export type ConverterScope<A, B> = {
   input?: A;
@@ -26,7 +26,7 @@ export type Pattern<
   Scope extends ConverterScope<unknown, unknown>,
   Input extends PatternIOType,
   Output extends PatternIOType,
-> = Merge<Scope, { input: Input; output: Output }>;
+> = Object.Merge<Scope, { input: Input; output: Output }>;
 
 export type CastStringList<
   Origin,
@@ -43,36 +43,67 @@ export type CastStringList<
   : string;
 
 export type CastStringString<
-  Origin,
+  Origin extends string,
   Scope extends ConverterScope<unknown, unknown>,
 > = Scope["input"] extends string
   ? Scope["output"] extends string
-    ? any
+    ? CorrelationByPattern<
+        GetPatternMode<Scope["input"]>["IL"],
+        UsePatternModeParse<GetPatternMode<Scope["input"]>, Origin>
+      >
     : string
   : string;
+
+type Res = {
+  $A: "1";
+  $B: "2";
+};
+
+type OP = `$B_$A`;
+
+type RepleaceByPattern<
+  Res extends Record<string, any>,
+  OP extends string,
+  Catch extends any[] = ["", ""],
+> = Catch[0] extends keyof Res
+  ? RepleaceByPattern<
+      Res,
+      OP extends `${infer _ extends Catch[0]}${infer R2}` ? R2 : "",
+      ["", `${Catch[1]}${Res[Catch[0]]}`]
+    >
+  : OP extends `${infer R1}${infer R3}`
+  ? RepleaceByPattern<Res, R3, [`${Catch[0]}${R1}`, Catch[1]]>
+  : [OP, Catch];
 
 // type AAA = String.Replace<"$A_$B", '$A', 'a'>
 // type BBB = String.Split<"$A_$B", "_">;
 // type CCC = String.Split<"$B_$A", "_">;
 
-// type T1 = GetPatternItem<"$A_$B">;
-// type T2 = GetPatternItem<"$B_$A">;
-
-// type AAAA = "我_是";
-
-// type UsePattern<PatternItem extends string, Del extends string> = String.Split<
-//   PatternItem,
-//   Del
-// >;
-
-// type T3 = UsePattern<"$A_$B", T1['Del'][number]>;
-
-type GetPatternItem<
+type UsePatternModeParse<
+  Pattern extends { IL: string[]; Del: string[] },
   Origin extends string,
-  IL extends string[] = [],
-  Del extends string[] = [],
+> = String.Split<Origin, ArrayType.At<Pattern["Del"], 0>>;
+
+type CorrelationByPattern<
+  Pattern extends Readonly<string[]>,
+  ParserResult extends Readonly<string[]>,
+  Res extends Record<any, any> = {},
+> = Pattern extends Readonly<
+  [infer PR1 extends string, ...infer PR2 extends string[]]
+>
+  ? ParserResult extends Readonly<
+      [infer PR3 extends string, ...infer PR4 extends string[]]
+    >
+    ? CorrelationByPattern<PR2, PR4, Object.Merge<Res, Record<PR1, PR3>>>
+    : Res
+  : Res;
+
+type GetPatternMode<
+  Origin extends string,
+  IL extends any[] = [],
+  Del extends any[] = [],
 > = Origin extends `${infer R3}$${infer R1}${infer R2}`
-  ? GetPatternItem<
+  ? GetPatternMode<
       R2,
       [...IL, `$${R1}`],
       IL["length"] extends 0 ? [] : [...Del, R3]
@@ -98,7 +129,7 @@ type StringAndStringParams<Scope extends ConverterScope<unknown, unknown>> =
     : false;
 
 export type CastRetType<
-  Origin,
+  Origin extends string,
   Scope extends ConverterScope<unknown, unknown>,
 > = true extends StringAndListParams<Scope>
   ? CastStringList<Origin, Scope>
