@@ -1,16 +1,12 @@
 import { von } from "./src";
 
-// const strPattern1 = von.string().pattern({
-//   input: ["true", "false", "1", "0"],
-//   output: [true, false, true, false],
-// } as const);
+const input = ["true", "false", "1", "0"] as const;
+const output = [true, false, true, false] as const;
 
-// const input = `$B_$A`
-// const output = `$B_$A`
-
+const strPattern1 = von.string().pattern(input, output);
 const strPattern2 = von.string().pattern(`$B_$A`, `$B_$A`);
 
-// const r1 = strPattern1.cast("0");
+const r1 = strPattern1.cast("1");
 const r2 = strPattern2.cast("0");
 
 // console.log({ r1 });
