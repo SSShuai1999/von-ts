@@ -1,37 +1,94 @@
-import { PrimitivesStr, Special, StrToPrimitives } from "./helper";
+import { Merge, PrimitivesStr, StrToPrimitives } from "./helper";
+import { type ArrayType } from "./typings";
 
-export type ConverterScope<A> = {
-  output: A;
+export type ConverterScope<A, B> = {
+  input?: A;
+  output?: B;
+  type: PrimitivesStr;
 };
 
-export type CastRetType<A, B> = A extends Special
-  ? B
-  : A extends PrimitivesStr
-  ? StrToPrimitives<A>
-  : never;
+export type NarrowInputOutput<Scope extends ConverterScope<unknown, unknown>> =
+  {
+    input: Readonly<StrToPrimitives<Scope["type"]>[]>;
+    output: unknown;
+  };
 
-export class Converter<
-  T extends { output: unknown },
-  Scope extends ConverterScope<T["output"]> = ConverterScope<T["output"]>,
-> {
-  private output: Scope["output"];
+export type Pattern<
+  Scope extends ConverterScope<unknown, unknown>,
+  Value extends NarrowInputOutput<Scope>,
+> = Merge<Scope, { input: Value["input"]; output: Value["output"] }>;
 
-  constructor({ output }: T) {
-    this.output = output;
+export type CasetStringList<
+  Origin,
+  Scope extends ConverterScope<unknown, unknown>,
+> = Scope["input"] extends Readonly<any[]>
+  ? Scope["output"] extends Readonly<any[]>
+    ? Origin extends Scope["input"][number]
+      ? ArrayType.At<
+          Scope["output"],
+          ArrayType.FindIndex<Scope["input"], Origin>
+        >
+      : string
+    : string
+  : string;
+
+export type CastRetType<
+  Origin,
+  Scope extends ConverterScope<unknown, unknown>,
+> = Scope["type"] extends "string" ? CasetStringList<Origin, Scope> : never;
+
+export function pattern<T extends ConverterScope<unknown, unknown>>(
+  props: T,
+): Converter<T> {
+  const { input, output } = props;
+
+  return new Converter({
+    input,
+    output,
+  } as any);
+}
+
+export class Converter<Scope extends ConverterScope<unknown, unknown>> {
+  private _input: Scope["input"] = undefined;
+  private _output: Scope["output"] = undefined;
+  private _type: Scope["type"];
+
+  constructor(props: Scope) {
+    this._type = props.type;
   }
 
-  cast<B>(from: B): CastRetType<Scope["output"], B> {
-    switch (this.output) {
-      case "string":
-        return String(from) as any;
-      case "number":
-        return Number(from) as any;
-      case "boolean":
-        return Boolean(from) as any;
-      case "literal":
-        return Boolean(from) as any;
-      default:
-        throw new Error("not found");
+  public pattern<Value extends NarrowInputOutput<Scope>>(
+    value: Value,
+  ): Converter<Pattern<Scope, Value>> {
+    this._input = value.input;
+    this._output = value.output;
+
+    return this as any;
+  }
+
+  public cast<Origin extends StrToPrimitives<Scope["type"]>>(
+    origin: Origin,
+  ): CastRetType<Origin, Scope> {
+    const input = this.getInp() as any[];
+    const output = this.getOut() as any[];
+    const idx = input.findIndex((item) => item === origin);
+
+    if (!idx) {
+      return origin as CastRetType<Origin, Scope>;
     }
+
+    return output[idx];
+  }
+
+  public getType() {
+    return this._type;
+  }
+
+  public getInp() {
+    return this._input;
+  }
+
+  public getOut() {
+    return this._output;
   }
 }

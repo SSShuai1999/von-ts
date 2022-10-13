@@ -80,13 +80,20 @@ export type DivdBy<M extends number, N extends number> = N extends 0
   ? unknown
   : _DivBy<M, N, []>;
 
+export type Merge<A, B> = {
+  [P in keyof A | keyof B]: P extends keyof B
+    ? B[P]
+    : P extends keyof A
+    ? A[P]
+    : never;
+};
+
 export type Primitives = number | string | boolean;
 
 export type StrPrimitivesMap = {
   number: number;
   string: string;
   boolean: boolean;
-  // literal: boolean;
 };
 
 export type PrimitivesStr = keyof StrPrimitivesMap;
