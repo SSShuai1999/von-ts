@@ -1,6 +1,6 @@
-import { PrimitivesKeys, GetPrimitivesByKey } from "../helper";
+import { PrimitivesKeys, GetPrimitivesByKey, Sub, Head, Tail } from "../helper";
 import { ArrayType } from "../typings";
-import { type String, type List, type Object } from "ts-toolbelt";
+import { String, type List, type Object } from "ts-toolbelt";
 
 export type ConverterScope<A, B> = {
   input?: A;
@@ -41,15 +41,84 @@ export type CastStringString<
   Scope extends ConverterScope<unknown, unknown>,
 > = Scope["input"] extends string
   ? Scope["output"] extends string
-    ? RepleaceByPattern<
-        Scope["output"],
-        CorrelationByPattern<
-          GetPatternMode<Scope["input"]>["IL"],
-          UsePatternModeParse<GetPatternMode<Scope["input"]>, Origin>
-        >
-      >
+    ? [
+        RepleaceByPattern<
+          Scope["output"],
+          CorrelationByPattern<
+            GetPatternMode<Scope["input"]>["IL"],
+            UsePatternModeParse<GetPatternMode<Scope["input"]>, Origin>
+          >
+        >,
+        Scope,
+      ]
     : string
   : string;
+
+export type InfinitySymbol = "$";
+
+export type StringLastChar<T extends string> = Sub<
+  String.Length<T>,
+  1
+> extends number
+  ? String.At<T, Sub<String.Length<T>, 1>>
+  : never;
+
+export type ParseInfinitySymbol<
+  T extends string,
+  Res extends string[] = [],
+> = T extends `$${infer R1}${infer R2}`
+  ? ParseInfinitySymbol<R2, [...Res, `$${R1}`]>
+  : T extends `${infer R1}$${infer R2}${infer R3}`
+  ? ParseInfinitySymbol<`${R1}${R3}`, [...Res, `$${R2}`]>
+  : Res;
+
+type GetPrevCharBySymStr<
+  Origin extends string,
+  Sym extends string,
+> = StringLastChar<String.Split<Origin, Sym>[0]>;
+
+export type ParseByOrigin<
+  IS extends string[],
+  Input extends string,
+  Origin extends string,
+  Catch extends Record<string, any> = {},
+> = IS extends [infer _ extends string]
+  ? Object.Merge<Catch, Record<Input, Origin>>
+  : IS extends [...infer R1 extends string[], infer R2 extends string]
+  ? // infer current CommonDel
+    GetPrevCharBySymStr<Input & string, R2> extends infer CommonDel
+    ? // infer current origin Del
+      Tail<String.Split<Origin, CommonDel & string>> &
+        string extends infer CurOriginDel
+      ? ParseByOrigin<
+          R1,
+          String.Split<Input & string, `${CommonDel & string}${R2}`>[0],
+          String.Split<
+            Origin & string,
+            `${CommonDel & string}${CurOriginDel & string}`
+          >[0],
+          Object.Merge<Catch, Record<R2, CurOriginDel>>
+        >
+      : Catch
+    : Catch
+  : Catch;
+
+type Temp = {
+  type: "string";
+  input: "$a_$b:$c";
+  output: "on$A";
+};
+
+type TT6 = ["$A"] extends [infer R1] ? R1 : never;
+type TempOrigin = "click_h1:handler";
+type TT3 = ParseByOrigin<T1, Temp["input"], TempOrigin>;
+type TT4 = StringLastChar<String.Split<Temp["input"] & string, `$C`>[0]>;
+
+type T1 = ParseInfinitySymbol<Temp["input"]>;
+type T2 = String.Split<Temp["input"], "$C">;
+type T3 = "$A_$B:";
+type GG = StringLastChar<T3>;
+type T4 = String.Split<T3, "$B">;
 
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
