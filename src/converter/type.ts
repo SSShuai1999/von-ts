@@ -116,63 +116,6 @@ export type ParseByOrigin<
     : Catch
   : Catch;
 
-type Temp = {
-  type: "string";
-  input: "$a_$b:$c";
-  output: "on$A";
-};
-
-type TempOrigin = "click_h1:handler";
-type TT3 = ParseByOrigin<
-  ParseInfinitySymbol<Temp["input"]>,
-  Temp["input"],
-  TempOrigin
->;
-
-type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-type RepleaceByPattern<
-  OP extends string,
-  Res extends any[],
-  Idx extends number[] = [],
-  D extends Prev[number] = 4,
-> = [D] extends [never]
-  ? never
-  : Res[Idx["length"]][0] extends undefined
-  ? never
-  : String.Replace<OP, Res[Idx["length"]][0], Res[Idx["length"]][1]>;
-
-type UsePatternModeParse<
-  Pattern extends { IL: string[]; Del: string[] },
-  Origin extends string,
-> = String.Split<Origin, ArrayType.At<Pattern["Del"], 0>>;
-
-type CorrelationByPattern<
-  Pattern extends Readonly<string[]>,
-  ParserResult extends Readonly<string[]>,
-  Res extends any[] = [],
-> = Pattern extends Readonly<
-  [infer PR1 extends string, ...infer PR2 extends string[]]
->
-  ? ParserResult extends Readonly<
-      [infer PR3 extends string, ...infer PR4 extends string[]]
-    >
-    ? CorrelationByPattern<PR2, PR4, List.Append<Res, [PR1, PR3]>>
-    : Res
-  : Res;
-
-type GetPatternMode<
-  Origin extends string,
-  IL extends any[] = [],
-  Del extends any[] = [],
-> = Origin extends `${infer R3}$${infer R1}${infer R2}`
-  ? GetPatternMode<
-      R2,
-      [...IL, `$${R1}`],
-      IL["length"] extends 0 ? [] : [...Del, R3]
-    >
-  : { IL: IL; Del: Del };
-
 type StringAndListParams<Scope extends ConverterScope<unknown, unknown>> =
   Scope["type"] extends "string"
     ? Scope["input"] extends Readonly<any[]>
