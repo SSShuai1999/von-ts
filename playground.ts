@@ -8,6 +8,3 @@ const strPattern2 = von.string().pattern(`$A#$B`, `$A:@U$B`);
 
 const r1 = strPattern1.cast("sss");
 const r2 = strPattern2.cast("on#click");
-
-console.log({ r1 });
-console.log({ r2 });
