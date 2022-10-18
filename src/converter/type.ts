@@ -1,6 +1,6 @@
 import { PrimitivesKeys, GetPrimitivesByKey, Sub, Head, Tail } from "../helper";
 import { ArrayType } from "../typings";
-import { Object, String, type List } from "ts-toolbelt";
+import { Object, String } from "ts-toolbelt";
 
 export type ConverterScope<A, B> = {
   input?: A;
@@ -41,14 +41,16 @@ export type CastStringString<
   Scope extends ConverterScope<unknown, unknown>,
 > = Scope["input"] extends string
   ? Scope["output"] extends string
-    ? RepleaceByParseRusult<
-        ParseByOrigin<
-          ParseInfinitySymbol<Scope["input"]>,
-          Scope["input"],
-          Origin
+    ? [
+        RepleaceByParseRusult<
+          ParseByOrigin<
+            ParseInfinitySymbol<Scope["input"]>,
+            Scope["input"],
+            Origin
+          >,
+          Scope["output"]
         >,
-        Scope["output"]
-      >
+      ]
     : string
   : string;
 
@@ -86,15 +88,29 @@ type GetPrevCharBySymStr<
   Sym extends string,
 > = StringLastChar<String.Split<Origin, Sym>[0]>;
 
+type GetTCharD<
+  ISS extends string,
+  Output extends string,
+> = Output extends `${infer R}${ISS}`
+  ? R
+  : Output extends `${ISS}${infer R}`
+  ? R
+  : "";
+
 export type ParseByOrigin<
   IS extends string[],
   Input extends string,
   Origin extends string,
   Catch extends Record<string, any> = {},
-> = IS extends [infer _ extends string]
-  ? Object.Merge<Catch, Record<Input, Origin>>
+> = IS extends [infer R extends string]
+  ? GetTCharD<R, Input> extends ""
+    ? Object.Merge<Catch, Record<Input, Origin>>
+    : Object.Merge<
+        Catch,
+        Record<R, String.Split<Origin, GetTCharD<R, Input> & string>[1]>
+      >
   : IS extends [...infer R1 extends string[], infer R2 extends string]
-  ? // infer current CommonDel
+  ? // infer current common Del
     GetPrevCharBySymStr<Input & string, R2> extends infer CommonDel
     ? // infer current origin Del
       Tail<String.Split<Origin, CommonDel & string>> &
