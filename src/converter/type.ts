@@ -1,6 +1,6 @@
 import { PrimitivesKeys, GetPrimitivesByKey, Sub, Head, Tail } from "../helper";
 import { ArrayType } from "../typings";
-import { String, type List, type Object } from "ts-toolbelt";
+import { Object, String, type List } from "ts-toolbelt";
 
 export type ConverterScope<A, B> = {
   input?: A;
@@ -41,20 +41,29 @@ export type CastStringString<
   Scope extends ConverterScope<unknown, unknown>,
 > = Scope["input"] extends string
   ? Scope["output"] extends string
-    ? [
-        RepleaceByPattern<
-          Scope["output"],
-          CorrelationByPattern<
-            GetPatternMode<Scope["input"]>["IL"],
-            UsePatternModeParse<GetPatternMode<Scope["input"]>, Origin>
-          >
+    ? RepleaceByParseRusult<
+        ParseByOrigin<
+          ParseInfinitySymbol<Scope["input"]>,
+          Scope["input"],
+          Origin
         >,
-        Scope,
-      ]
+        Scope["output"]
+      >
     : string
   : string;
 
 export type InfinitySymbol = "$";
+
+type RepleaceByParseRusult<
+  Result extends Record<string, any>,
+  O extends string,
+> = O extends `$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<Result, String.Replace<O, `$${R1}`, Result[`$${R1}`]>>
+  : O extends `${infer _}$${infer R2}`
+  ? RepleaceByParseRusult<Result, String.Replace<O, `$${R2}`, Result[`$${R2}`]>>
+  : O extends `${infer _}$${infer R2}${infer _}`
+  ? RepleaceByParseRusult<Result, String.Replace<O, `$${R2}`, Result[`$${R2}`]>>
+  : O;
 
 export type StringLastChar<T extends string> = Sub<
   String.Length<T>,
@@ -92,11 +101,15 @@ export type ParseByOrigin<
         string extends infer CurOriginDel
       ? ParseByOrigin<
           R1,
-          String.Split<Input & string, `${CommonDel & string}${R2}`>[0],
-          String.Split<
-            Origin & string,
-            `${CommonDel & string}${CurOriginDel & string}`
-          >[0],
+          Head<String.Split<Input & string, `${CommonDel & string}${R2}`>> &
+            string,
+          Head<
+            String.Split<
+              Origin & string,
+              `${CommonDel & string}${CurOriginDel & string}`
+            >
+          > &
+            string,
           Object.Merge<Catch, Record<R2, CurOriginDel>>
         >
       : Catch
@@ -109,16 +122,12 @@ type Temp = {
   output: "on$A";
 };
 
-type TT6 = ["$A"] extends [infer R1] ? R1 : never;
 type TempOrigin = "click_h1:handler";
-type TT3 = ParseByOrigin<T1, Temp["input"], TempOrigin>;
-type TT4 = StringLastChar<String.Split<Temp["input"] & string, `$C`>[0]>;
-
-type T1 = ParseInfinitySymbol<Temp["input"]>;
-type T2 = String.Split<Temp["input"], "$C">;
-type T3 = "$A_$B:";
-type GG = StringLastChar<T3>;
-type T4 = String.Split<T3, "$B">;
+type TT3 = ParseByOrigin<
+  ParseInfinitySymbol<Temp["input"]>,
+  Temp["input"],
+  TempOrigin
+>;
 
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 

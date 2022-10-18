@@ -88,12 +88,16 @@ export type Merge<A, B> = {
     : never;
 };
 
-export type Head<T extends any[]> = T extends [infer R1, ...infer R2]
+export type Head<T extends any[]> = T extends [infer R1, ...any]
   ? R1
+  : T extends [infer R]
+  ? R
   : never;
 
-export type Tail<T extends any[]> = T extends [...infer R1, infer R2]
+export type Tail<T extends any[]> = T extends [...any, infer R2]
   ? R2
+  : T extends [infer R]
+  ? R
   : never;
 
 export type Primitives = number | string | boolean;
