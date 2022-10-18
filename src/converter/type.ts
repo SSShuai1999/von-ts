@@ -41,16 +41,14 @@ export type CastStringString<
   Scope extends ConverterScope<unknown, unknown>,
 > = Scope["input"] extends string
   ? Scope["output"] extends string
-    ? [
-        RepleaceByParseRusult<
-          ParseByOrigin<
-            ParseInfinitySymbol<Scope["input"]>,
-            Scope["input"],
-            Origin
-          >,
-          Scope["output"]
+    ? RepleaceByParseRusult<
+        ParseByOrigin<
+          ParseInfinitySymbol<Scope["input"]>,
+          Scope["input"],
+          Origin
         >,
-      ]
+        Scope["output"]
+      >
     : string
   : string;
 
@@ -59,7 +57,67 @@ export type InfinitySymbol = "$";
 type RepleaceByParseRusult<
   Result extends Record<string, any>,
   O extends string,
-> = O extends `$${infer R1}${infer _}`
+> = O extends `@UU$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@UU$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@UU$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `@U$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@U$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@U$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `@LL$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@LL$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@LL$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@LL$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@LL$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@LL$${R1}`, Uppercase<Result[`$${R1}`]>>
+    >
+  : O extends `@L$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@L$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@L$${infer R1}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@L$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `${infer _}@L$${infer R1}${infer _}`
+  ? RepleaceByParseRusult<
+      Result,
+      String.Replace<O, `@L$${R1}`, Capitalize<Result[`$${R1}`]>>
+    >
+  : O extends `$${infer R1}${infer _}`
   ? RepleaceByParseRusult<Result, String.Replace<O, `$${R1}`, Result[`$${R1}`]>>
   : O extends `${infer _}$${infer R2}`
   ? RepleaceByParseRusult<Result, String.Replace<O, `$${R2}`, Result[`$${R2}`]>>
