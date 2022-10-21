@@ -14,6 +14,7 @@ importers:
       eslint: ^8.19.0
       esno: ^0.16.3
       pnpm: ^7.5.0
+      reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       ts-toolbelt: ^9.6.0
       typescript: ^4.8.4
@@ -21,6 +22,7 @@ importers:
       vite: ^2.9.14
       vitest: ^0.18.0
     dependencies:
+      reflect-metadata: 0.1.13
       ts-toolbelt: 9.6.0
     devDependencies:
       '@antfu/eslint-config': 0.25.2_z4bbprzjrhnsfa24uvmcbu7f5q
@@ -3060,6 +3062,10 @@ packages:
       parse-json: 5.2.0
       type-fest: 0.6.0
     dev: true
+
+  /reflect-metadata/0.1.13:
+    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
+    dev: false
 
   /regexp-tree/0.1.24:
     resolution: {integrity: sha512-s2aEVuLhvnVJW6s/iPgEGK6R+/xngd2jNQ+xy4bXNDKxZKJH6jpPHY6kVeVv1IeLCHgswRj+Kl3ELaDjG6V1iw==}

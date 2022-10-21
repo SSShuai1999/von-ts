@@ -1,5 +1,6 @@
 import { GetPrimitivesByKey } from "../helper";
 import { CastRetType, ConverterScope, Pattern, PatternIOType } from "./type";
+import "reflect-metadata";
 
 export class Converter<Scope extends ConverterScope<unknown, unknown>> {
   private _input: Scope["input"] = undefined;

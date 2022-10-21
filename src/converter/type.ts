@@ -53,6 +53,7 @@ export type CastStringString<
   : string;
 
 export type InfinitySymbol = "$";
+export type InfinitySymbol2 = String.At<InfinitySymbol, 0>;
 
 type RepleaceByParseRusult<
   Result extends Record<string, any>,
@@ -60,62 +61,110 @@ type RepleaceByParseRusult<
 > = O extends `@UU$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@UU$${String.At<R1, 0>}`,
+        Uppercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@UU$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@UU$${String.At<R1, 0>}`,
+        Uppercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@UU$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@UU$${R1}`, Uppercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@UU$${String.At<R1, 0>}`,
+        Uppercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `@U$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@U$${String.At<R1, 0>}`,
+        Capitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@U$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@U$${String.At<R1, 0>}`,
+        Capitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@U$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@U$${R1}`, Capitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@U$${String.At<R1, 0>}`,
+        Capitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `@LL$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@LL$${R1}`, Lowercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@LL$${String.At<R1, 0>}`,
+        Lowercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@LL$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@LL$${R1}`, Lowercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@LL$${String.At<R1, 0>}`,
+        Lowercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@LL$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@LL$${R1}`, Lowercase<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@LL$${String.At<R1, 0>}`,
+        Lowercase<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `@L$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@L$${R1}`, Uncapitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@L$${String.At<R1, 0>}`,
+        Uncapitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@L$${infer R1}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@L$${R1}`, Uncapitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@L$${String.At<R1, 0>}`,
+        Uncapitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `${infer _}@L$${infer R1}${infer _}`
   ? RepleaceByParseRusult<
       Result,
-      String.Replace<O, `@L$${R1}`, Uncapitalize<Result[`$${R1}`]>>
+      String.Replace<
+        O,
+        `@L$${String.At<R1, 0>}`,
+        Uncapitalize<Result[`$${String.At<R1, 0>}`]>
+      >
     >
   : O extends `$${infer R1}${infer _}`
   ? RepleaceByParseRusult<Result, String.Replace<O, `$${R1}`, Result[`$${R1}`]>>
