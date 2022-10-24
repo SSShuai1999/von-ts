@@ -1,6 +1,12 @@
-import { PrimitivesKeys, GetPrimitivesByKey, Sub, Head, Tail } from "../helper";
 import { ArrayType } from "../typings";
 import { Object, String } from "ts-toolbelt";
+import type {
+  PrimitivesKeys,
+  GetPrimitivesByKey,
+  Sub,
+  Head,
+  Tail,
+} from "../typings/hepler";
 
 export type ConverterScope<A, B> = {
   input?: A;

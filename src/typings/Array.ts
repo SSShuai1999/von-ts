@@ -9,5 +9,3 @@ export type FindIndex<
   : -1;
 
 export type At<Arr extends readonly any[], Index extends number> = Arr[Index];
-
-
