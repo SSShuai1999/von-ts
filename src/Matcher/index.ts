@@ -1,5 +1,6 @@
-import type { Any, C, List } from "ts-toolbelt";
+import type { Any, Object, List, String } from "ts-toolbelt";
 import type { ArrayType } from "../typings";
+import { Tail, Head, Merge } from "../typings/hepler";
 
 export type MatcherKeysMap = [
   "$A",
@@ -76,21 +77,73 @@ type ParseRAry<
   Origin,
 > = ArrayType.At<Scope["Output"], ArrayType.FindIndex<Scope["Input"], Origin>>;
 
-type ParseMStrLens<T extends string, CT extends string[] = []> = T extends ""
+type ParseMStrMap<T extends string, CT extends string[] = []> = T extends ""
   ? List.Intersect<CT, MatcherKeysMap, "<-extends">
   : T extends `$${infer R1}${infer R2}`
-  ? ParseMStrLens<R2, [...CT, `$${R1}`]>
+  ? ParseMStrMap<R2, [...CT, `$${R1}`]>
   : T extends `${infer R1}$${infer R2}${infer R3}`
-  ? ParseMStrLens<`${R1}${R3}`, [...CT, `$${R2}`]>
+  ? ParseMStrMap<`${R1}${R3}`, [...CT, `$${R2}`]>
   : T extends `${infer R1}$${infer R2}`
-  ? ParseMStrLens<R1, [...CT, `$${R2}`]>
+  ? ParseMStrMap<R1, [...CT, `$${R2}`]>
   : List.Intersect<CT, MatcherKeysMap, "<-extends">;
+
+type LinkRules<
+  T extends any[],
+  Input extends string,
+  Catch extends Record<string, any> = {},
+> = T extends [
+  infer R1 extends string,
+  infer R2 extends string,
+  ...infer R3 extends string[],
+]
+  ? Input extends `${any}${R1}${infer Del}${R2}${any}`
+    ? LinkRules<[R2, ...R3], Input, Object.Merge<Catch, Record<`${R2}`, Del>>>
+    : Catch
+  : T extends [infer R1 extends string, infer R2 extends string]
+  ? Input extends `${any}${R1}${infer Del}${R2}${any}`
+    ? Object.Merge<Catch, Record<`${R2}`, Del>>
+    : Catch
+  : Catch;
+
+// [PMSM, LinkR, Origin]
+type AAA1 = [
+  ["$A", "$B", "$C"],
+  {
+    $B: ":";
+  },
+  "sss:aaa",
+];
+
+type AA2 = String.Split<"AA:BB:CC", ":">;
+type AAA = LinkRules<AAA1[0], `$A:$B--$C`>;
+
+type ParseOriginByMStrMap<
+  Scope extends MatcherScope<any, any, any>,
+  PMSM extends ParseMStrMap<any, any>,
+  Origin,
+  LinkR = LinkRules<PMSM, Scope["Input"]>,
+> = Object.Merge<
+  {},
+  {
+    result: [PMSM, LinkR, Origin];
+    aaa: PMSM extends [...infer R1 extends string[], infer R2 extends string]
+      ? `${R2}` extends keyof LinkR
+        ? [
+            Origin extends `${infer RR1}${LinkR[`${R2}`] & string}${infer RR3}`
+              ? [RR1, RR3]
+              : ``,
+            LinkR[`${R2}`],
+          ]
+        : never
+      : never;
+  }
+>["aaa"];
 
 type ParseMStr<
   Scope extends MatcherScope<any, any, any>,
   Origin,
-  L = ParseMStrLens<Scope["Input"]>,
-> = L;
+  PMSM extends ParseMStrMap<any, any> = ParseMStrMap<Scope["Input"]>,
+> = ParseOriginByMStrMap<Scope, PMSM, Origin>;
 
 type MR<Scope extends MatcherScope<any, any, any>, Origin> = Any.Is<
   CheckScopeType<Scope>,
