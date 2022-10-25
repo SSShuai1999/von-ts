@@ -1,5 +1,3 @@
-import type { Any, List } from "ts-toolbelt";
-import { type ArrayType } from "./typings";
 import { Converter } from "./converter/converter";
 
 export function to_string(): Converter<{ type: "string" }> {

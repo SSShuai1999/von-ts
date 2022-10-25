@@ -1,39 +1,43 @@
-import type { Any } from "ts-toolbelt";
+import type { Any, C, List } from "ts-toolbelt";
 import type { ArrayType } from "../typings";
 
-export type MatcherKeys =
-  | "$A"
-  | "$B"
-  | "$C"
-  | "$D"
-  | "$E"
-  | "$F"
-  | "$G"
-  | "$H"
-  | "$I"
-  | "$J"
-  | "$K"
-  | "$L"
-  | "$M"
-  | "$N"
-  | "$O"
-  | "$P"
-  | "$Q"
-  | "$R"
-  | "$S"
-  | "$T"
-  | "$U"
-  | "$V"
-  | "$W"
-  | "$X"
-  | "$Y"
-  | "$Z";
+export type MatcherKeysMap = [
+  "$A",
+  "$B",
+  "$C",
+  "$D",
+  "$E",
+  "$F",
+  "$G",
+  "$H",
+  "$I",
+  "$J",
+  "$K",
+  "$L",
+  "$M",
+  "$N",
+  "$O",
+  "$P",
+  "$Q",
+  "$R",
+  "$S",
+  "$T",
+  "$U",
+  "$V",
+  "$W",
+  "$X",
+  "$Y",
+  "$Z",
+];
 
-export type QueryConstrType<T> = T extends any[]
-  ? T[number]
-  : T extends readonly any[]
-  ? T[number]
-  : T;
+type MatcherKeys = MatcherKeysMap[number];
+
+export type QueryConstrType<T extends MatcherScope<any, any, any>> =
+  T["Input"] extends any[]
+    ? T["Input"][number]
+    : T extends readonly any[]
+    ? T["Input"][number]
+    : string;
 
 export type MStr = readonly any[] | any[] | `${any}${MatcherKeys}${any}`;
 
@@ -72,7 +76,21 @@ type ParseRAry<
   Origin,
 > = ArrayType.At<Scope["Output"], ArrayType.FindIndex<Scope["Input"], Origin>>;
 
-type ParseMStr<Scope extends MatcherScope<any, any, any>, Origin> = "ParseMStr";
+type ParseMStrLens<T extends string, CT extends string[] = []> = T extends ""
+  ? List.Intersect<CT, MatcherKeysMap, "<-extends">
+  : T extends `$${infer R1}${infer R2}`
+  ? ParseMStrLens<R2, [...CT, `$${R1}`]>
+  : T extends `${infer R1}$${infer R2}${infer R3}`
+  ? ParseMStrLens<`${R1}${R3}`, [...CT, `$${R2}`]>
+  : T extends `${infer R1}$${infer R2}`
+  ? ParseMStrLens<R1, [...CT, `$${R2}`]>
+  : List.Intersect<CT, MatcherKeysMap, "<-extends">;
+
+type ParseMStr<
+  Scope extends MatcherScope<any, any, any>,
+  Origin,
+  L = ParseMStrLens<Scope["Input"]>,
+> = L;
 
 type MR<Scope extends MatcherScope<any, any, any>, Origin> = Any.Is<
   CheckScopeType<Scope>,
@@ -102,7 +120,7 @@ class Matcher<Scope extends MatcherScope<any, any, any>> {
     return this as any;
   }
 
-  cast<Origin extends QueryConstrType<Scope["Input"]>>(
+  cast<Origin extends QueryConstrType<Scope>>(
     origin: Origin,
   ): MR<Scope, Origin> {
     return {} as any;

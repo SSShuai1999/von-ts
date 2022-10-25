@@ -17,3 +17,4 @@ const M1 = von.match(input2, output2);
 const M2 = von.match(`$A:$B`, `$B:$A`);
 
 const r1 = M1.cast("sss");
+const r2 = M2.cast("sss:aaa");
