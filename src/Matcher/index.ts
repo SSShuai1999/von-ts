@@ -77,6 +77,8 @@ type ParseRAry<
   Origin,
 > = ArrayType.At<Scope["Output"], ArrayType.FindIndex<Scope["Input"], Origin>>;
 
+type s = 2 | 1;
+
 type ParseMStrMap<T extends string, CT extends string[] = []> = T extends ""
   ? List.Intersect<CT, MatcherKeysMap, "<-extends">
   : T extends `$${infer R1}${infer R2}`
@@ -96,48 +98,57 @@ type LinkRules<
   infer R2 extends string,
   ...infer R3 extends string[],
 ]
-  ? Input extends `${any}${R1}${infer Del}${R2}${any}`
-    ? LinkRules<[R2, ...R3], Input, Object.Merge<Catch, Record<`${R2}`, Del>>>
+  ? Input extends `${R1}${infer RR1}${R2}`
+    ? Object.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
+    : Input extends `${infer RR1}${R1}${infer RR2}${R2}`
+    ? Object.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
+    : Input extends `${infer RR1}${R1}${infer RR2}${R2}${infer RR3}`
+    ? LinkRules<
+        [R2, ...R3],
+        `${R2}${RR3}`,
+        Object.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
+      >
     : Catch
-  : T extends [infer R1 extends string, infer R2 extends string]
-  ? Input extends `${any}${R1}${infer Del}${R2}${any}`
-    ? Object.Merge<Catch, Record<`${R2}`, Del>>
+  : T extends [infer R1 extends string]
+  ? Input extends `${R1}${infer RR1}`
+    ? Object.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
     : Catch
   : Catch;
 
-// [PMSM, LinkR, Origin]
-type AAA1 = [
-  ["$A", "$B", "$C"],
-  {
-    $B: ":";
-  },
-  "sss:aaa",
-];
-
-type AA2 = String.Split<"AA:BB:CC", ":">;
-type AAA = LinkRules<AAA1[0], `$A:$B--$C`>;
+type _ParseOriginByMStrMap<
+  PMSM extends ParseMStrMap<any, any>,
+  LinkR extends LinkRules<any, any>,
+  Origin,
+  Catch extends Record<string, any> = {},
+> = PMSM extends [infer R1 extends string, ...infer R2 extends string[]]
+  ? R1 extends keyof LinkR
+    ? LinkR[R1] extends {
+        left: infer Left extends string;
+        right: infer Right extends string;
+      }
+      ? Origin extends `${Left}${infer A}${Right}${infer Other}`
+        ? _ParseOriginByMStrMap<
+            R2,
+            LinkR,
+            Other,
+            Object.Merge<Catch, Record<R1, A>>
+          >
+        : never
+      : Catch
+    : Object.Merge<Catch, Record<R1, Origin>>
+  : Catch;
 
 type ParseOriginByMStrMap<
   Scope extends MatcherScope<any, any, any>,
   PMSM extends ParseMStrMap<any, any>,
   Origin,
-  LinkR = LinkRules<PMSM, Scope["Input"]>,
+  LinkR extends LinkRules<any, any> = LinkRules<PMSM, Scope["Input"]>,
 > = Object.Merge<
   {},
   {
-    result: [PMSM, LinkR, Origin];
-    aaa: PMSM extends [...infer R1 extends string[], infer R2 extends string]
-      ? `${R2}` extends keyof LinkR
-        ? [
-            Origin extends `${infer RR1}${LinkR[`${R2}`] & string}${infer RR3}`
-              ? [RR1, RR3]
-              : ``,
-            LinkR[`${R2}`],
-          ]
-        : never
-      : never;
+    result: _ParseOriginByMStrMap<PMSM, LinkR, Origin>;
   }
->["aaa"];
+>["result"];
 
 type ParseMStr<
   Scope extends MatcherScope<any, any, any>,

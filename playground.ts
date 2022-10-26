@@ -14,7 +14,8 @@ import { von, C } from "./src";
 const input2 = ["true", 1, "false", "1", "sss"] as const;
 const output2 = [true, 2, false, true, false] as const;
 const M1 = von.match(input2, output2);
-const M2 = von.match(`$A:$B:$C`, `$B:$A`);
+const M2 = von.match(`-$A@$B!`, `$B:$A`);
 
 const r1 = M1.cast("sss");
-const r2 = M2.cast("AA:BB:CC");
+
+const r2 = M2.cast("-HELLO@WORLD!");
