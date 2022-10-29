@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2018",    
     "module": "ES2022",     
-    "lib": ["es6", "DOM"],
+    "lib": ["ESNext", "DOM"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,

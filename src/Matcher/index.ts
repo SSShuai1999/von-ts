@@ -1,7 +1,8 @@
-import type { Any, Object, List, String } from "ts-toolbelt";
+import { Any, Object as O, List, String } from "ts-toolbelt";
 import type { ArrayType } from "../typings";
-import { checkCastMode } from "./utils";
+import { checkCastMode, linkRules, parseMstr, parseMStrMap } from "./utils";
 
+export const mstrLens = 2;
 export const matcherKeysMap = [
   "$A",
   "$B",
@@ -42,9 +43,10 @@ export type QueryConstrType<T extends MatcherScope<any, any, any>> =
     ? T["Input"][number]
     : string;
 
-export type MStr = readonly any[] | any[] | `${any}${MatcherKeys}${any}`;
+export type MStr = `${any}${MatcherKeys}${any}`;
+export type MStrMap = readonly any[] | any[] | `${any}${MatcherKeys}${any}`;
 
-export type DepMStr<_MStr extends MStr> = _MStr;
+export type DepMStrMap<_MStrMap extends MStrMap> = MStrMap;
 
 export type If<B extends Boolean, Then, Else = never> = B extends 1
   ? Then
@@ -99,23 +101,23 @@ type LinkRules<
   ...infer R3 extends string[],
 ]
   ? Input extends `${R1}${infer RR1}${R2}`
-    ? Object.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
+    ? O.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
     : Input extends `${infer RR1}${R1}${infer RR2}${R2}`
-    ? Object.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
+    ? O.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
     : Input extends `${infer RR1}${R1}${infer RR2}${R2}${infer RR3}`
     ? LinkRules<
         [R2, ...R3],
         `${R2}${RR3}`,
-        Object.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
+        O.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
       >
     : Catch
   : T extends [infer R1 extends string]
   ? Input extends `${R1}${infer RR1}`
-    ? Object.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
+    ? O.Merge<Catch, Record<R1, { left: ""; right: RR1 }>>
     : Input extends `${infer RR1}${R1}`
-    ? Object.Merge<Catch, Record<R1, { left: RR1; right: "" }>>
+    ? O.Merge<Catch, Record<R1, { left: RR1; right: "" }>>
     : Input extends `${infer RR1}${R1}${infer RR2}`
-    ? Object.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
+    ? O.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
     : Catch
   : Catch;
 
@@ -137,11 +139,11 @@ type _ParseOriginByMStrMap<
             List.Remove<PMSM, 0, 0>,
             LinkR,
             Other,
-            Object.Merge<Catch, Record<R1, A>>
+            O.Merge<Catch, Record<R1, A>>
           >
         : never
       : Catch
-    : Object.Merge<Catch, Record<R1, Origin>>
+    : O.Merge<Catch, Record<R1, Origin>>
   : Catch;
 
 type ReplaceOutput<
@@ -241,25 +243,31 @@ export class Matcher<Scope extends MatcherScope<any, any, any>> {
     return { error: new Error("Parse Error") } as MR<Scope, Origin>;
   }
 
-  #castMStr(origin: MStr) {}
+  #castMStr(origin: MStr) {
+    const mstrList = parseMStrMap(this.input, origin);
+    const lRules = linkRules(mstrList, this.input);
+    const parserResult = parseMstr(lRules, origin);
 
-  #castRAry<T, A extends Scope["Input"], B extends Scope["Output"]>(
-    origin: T,
-  ): Scope["Output"][number] {
-    const i = this.input as A[];
-    const o = this.output as B[];
+    let result = this.output;
+    mstrList.forEach((item) => {
+      result = result.replaceAll(item, parserResult[item]);
+    });
 
-    const foundIndex = i.findIndex((item: any) => item === origin);
+    return result;
+  }
+
+  #castRAry<T>(origin: T): Scope["Output"][number] {
+    const foundIndex = this.input.findIndex((item: any) => item === origin);
 
     if (foundIndex === -1) {
       return undefined;
     } else {
-      return o.at(foundIndex);
+      return this.output.at(foundIndex);
     }
   }
 }
 
-export function match<I extends MStr, O extends DepMStr<MStr>, C>(
+export function match<I extends MStrMap, O extends DepMStrMap<MStrMap>, C>(
   input: I,
   output: O,
   config?: C,
