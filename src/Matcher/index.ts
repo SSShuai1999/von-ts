@@ -119,30 +119,23 @@ type LinkRules<
 type _ParseOriginByMStrMap<
   PMSM extends ParseMStrMap<any, any>,
   LinkR extends LinkRules<any, any>,
-  Origin,
+  Origin extends string,
   Catch extends Record<string, any> = {},
 > = PMSM extends []
   ? Catch
-  : PMSM extends [infer R1 extends string]
+  : ArrayType.At<PMSM, 0> extends infer R1 extends string
   ? R1 extends keyof LinkR
     ? LinkR[R1] extends {
         left: infer Left extends string;
         right: infer Right extends string;
       }
       ? Origin extends `${Left}${infer A}${Right}${infer Other}`
-        ? List.Remove<PMSM, 0, 1> extends infer LR extends []
-          ? _ParseOriginByMStrMap<
-              LR,
-              LinkR,
-              Other,
-              Object.Merge<Catch, Record<R1, `${A}${Other}`>>
-            >
-          : _ParseOriginByMStrMap<
-              List.Remove<PMSM, 0, 1>,
-              LinkR,
-              Other,
-              Object.Merge<Catch, Record<R1, A>>
-            >
+        ? _ParseOriginByMStrMap<
+            List.Remove<PMSM, 0, 0>,
+            LinkR,
+            Other,
+            Object.Merge<Catch, Record<R1, A>>
+          >
         : never
       : Catch
     : Object.Merge<Catch, Record<R1, Origin>>
@@ -163,7 +156,7 @@ type ReplaceOutput<
 type ParseOriginByMStrMap<
   Scope extends MatcherScope<any, any, any>,
   PMSM extends ParseMStrMap<any, any>,
-  Origin,
+  Origin extends string,
   LinkR extends LinkRules<any, any> = LinkRules<PMSM, Scope["Input"]>,
 > = _ParseOriginByMStrMap<PMSM, LinkR, Origin>;
 
@@ -172,7 +165,7 @@ type ParseMStr<
   Origin,
   PMSM extends ParseMStrMap<any, any> = ParseMStrMap<Scope["Input"]>,
 > = ReplaceOutput<
-  ParseOriginByMStrMap<Scope, PMSM, Origin>,
+  ParseOriginByMStrMap<Scope, PMSM, Origin & string>,
   PMSM,
   Scope["Output"]
 >;
