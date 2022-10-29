@@ -147,7 +147,31 @@ type ReplaceOutput<
   Output,
 > = PMSM extends [infer R1 extends string, ...infer R2 extends string[]]
   ? R1 extends keyof PO
-    ? Output extends `${any}${R1}${any}`
+    ? Output extends `${any}++${R1}${any}`
+      ? ReplaceOutput<
+          PO,
+          R2,
+          String.Replace<Output, `++${R1}`, Uppercase<PO[R1]>>
+        >
+      : Output extends `${any}+${R1}${any}`
+      ? ReplaceOutput<
+          PO,
+          R2,
+          String.Replace<Output, `+${R1}`, Capitalize<PO[R1]>>
+        >
+      : Output extends `${any}--${R1}${any}`
+      ? ReplaceOutput<
+          PO,
+          R2,
+          String.Replace<Output, `--${R1}`, Lowercase<PO[R1]>>
+        >
+      : Output extends `${any}-${R1}${any}`
+      ? ReplaceOutput<
+          PO,
+          R2,
+          String.Replace<Output, `-${R1}`, Uncapitalize<PO[R1]>>
+        >
+      : Output extends `${any}${R1}${any}`
       ? ReplaceOutput<PO, R2, String.Replace<Output, R1, PO[R1]>>
       : ReplaceOutput<PO, R2, Output>
     : ReplaceOutput<PO, R2, Output>
