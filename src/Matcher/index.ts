@@ -1,7 +1,8 @@
 import type { Any, Object, List, String } from "ts-toolbelt";
 import type { ArrayType } from "../typings";
+import { checkCastMode } from "./utils";
 
-export type MatcherKeysMap = [
+export const matcherKeysMap = [
   "$A",
   "$B",
   "$C",
@@ -28,9 +29,11 @@ export type MatcherKeysMap = [
   "$X",
   "$Y",
   "$Z",
-];
+] as const;
 
-type MatcherKeys = MatcherKeysMap[number];
+export type MatcherKeysMap = typeof matcherKeysMap;
+
+export type MatcherKeys = MatcherKeysMap[number];
 
 export type QueryConstrType<T extends MatcherScope<any, any, any>> =
   T["Input"] extends any[]
@@ -47,14 +50,14 @@ export type If<B extends Boolean, Then, Else = never> = B extends 1
   ? Then
   : Else;
 
-type MatcherScope<I, O, C> = {
+export type MatcherScope<I, O, C> = {
   Input: I;
   Output: O;
   Config: C;
 };
 
 // RAry = Readonly any[], MStr = a string containing a match
-type ScopeType = {
+export type ScopeType = {
   RAry: "RAry";
   MStr: "MStr";
 };
@@ -204,9 +207,9 @@ type MR<Scope extends MatcherScope<any, any, any>, Origin> = Any.Is<
   ? ParseMStr<Scope, Origin>
   : never;
 
-class Matcher<Scope extends MatcherScope<any, any, any>> {
+export class Matcher<Scope extends MatcherScope<any, any, any>> {
   public input: Scope["Input"] = undefined;
-  public onput: Scope["Output"] = undefined;
+  public output: Scope["Output"] = undefined;
   public config?: Scope["Config"];
 
   // constructor can't be filled with self type, so use `init` function,
@@ -216,7 +219,7 @@ class Matcher<Scope extends MatcherScope<any, any, any>> {
     config?: C,
   ): Matcher<{ Input: I; Output: O; Config: C }> {
     this.input = input;
-    this.onput = output;
+    this.output = output;
     this.config = config;
 
     return this as any;
@@ -225,7 +228,34 @@ class Matcher<Scope extends MatcherScope<any, any, any>> {
   cast<Origin extends QueryConstrType<Scope>>(
     origin: Origin,
   ): MR<Scope, Origin> {
-    return {} as any;
+    const mode = checkCastMode(this);
+
+    if (mode === "MStr") {
+      return this.#castMStr(origin as MStr) as MR<Scope, Origin>;
+    }
+
+    if (mode === "RAry") {
+      return this.#castRAry(origin) as MR<Scope, Origin>;
+    }
+
+    return { error: new Error("Parse Error") } as MR<Scope, Origin>;
+  }
+
+  #castMStr(origin: MStr) {}
+
+  #castRAry<T, A extends Scope["Input"], B extends Scope["Output"]>(
+    origin: T,
+  ): Scope["Output"][number] {
+    const i = this.input as A[];
+    const o = this.output as B[];
+
+    const foundIndex = i.findIndex((item: any) => item === origin);
+
+    if (foundIndex === -1) {
+      return undefined;
+    } else {
+      return o.at(foundIndex);
+    }
   }
 }
 

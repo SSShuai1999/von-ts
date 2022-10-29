@@ -1,2 +1,1 @@
-export * from "./core";
-export * from "./Matcher";
+export * from "./matcher";
