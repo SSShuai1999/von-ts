@@ -250,7 +250,27 @@ export class Matcher<Scope extends MatcherScope<any, any, any>> {
 
     let result = this.output;
     mstrList.forEach((item) => {
-      result = result.replaceAll(item, parserResult[item]);
+      if (result.includes(`++${item}`)) {
+        result = result.replaceAll(
+          `++${item}`,
+          parserResult[item].toUpperCase(),
+        );
+      } else if (result.includes(`+${item}`)) {
+        const head = parserResult[item].slice(0, 1);
+        const tail = parserResult[item].slice(1);
+        result = result.replaceAll(`+${item}`, head.toUpperCase() + tail);
+      } else if (result.includes(`--${item}`)) {
+        result = result.replaceAll(
+          `--${item}`,
+          parserResult[item].toLowerCase(),
+        );
+      } else if (result.includes(`-${item}`)) {
+        const head = parserResult[item].slice(0, 1);
+        const tail = parserResult[item].slice(1);
+        result = result.replaceAll(`-${item}`, head.toLowerCase() + tail);
+      } else {
+        result = result.replaceAll(item, parserResult[item]);
+      }
     });
 
     return result;
