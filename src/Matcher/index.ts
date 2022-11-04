@@ -135,12 +135,14 @@ type _ParseOriginByMStrMap<
         right: infer Right extends string;
       }
       ? Origin extends `${Left}${infer A}${Right}${infer Other}`
-        ? _ParseOriginByMStrMap<
-            List.Remove<PMSM, 0, 0>,
-            LinkR,
-            Other,
-            O.Merge<Catch, Record<R1, A>>
-          >
+        ? Right extends ""
+          ? O.Merge<Catch, Record<R1, `${A}${Other}`>>
+          : _ParseOriginByMStrMap<
+              List.Remove<PMSM, 0, 0>,
+              LinkR,
+              Other,
+              O.Merge<Catch, Record<R1, A>>
+            >
         : never
       : Catch
     : O.Merge<Catch, Record<R1, Origin>>

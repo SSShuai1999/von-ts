@@ -53,7 +53,6 @@ export const parseMstr = (lRules: any, origin: MStr) => {
   Object.keys(lRules).forEach((item) => {
     const itemRule = lRules[item as any as MStr];
     if (itemRule) {
-      console.log({ itemRule });
       if (itemRule["right"] !== "") {
         const hasMstr = matcherKeysMap.find((item) =>
           itemRule["left"].includes(item),
@@ -75,12 +74,16 @@ export const parseMstr = (lRules: any, origin: MStr) => {
         const hasMstr = matcherKeysMap.find((item) =>
           itemRule["left"].includes(item),
         );
+
         if (hasMstr) {
           const newLeft = itemRule["left"].replaceAll(
             hasMstr,
             parserResult[hasMstr],
           );
           const result = origin.slice(newLeft["length"]);
+          parserResult[item] = result;
+        } else {
+          const result = origin.slice(itemRule["left"]["length"]);
           parserResult[item] = result;
         }
       }
