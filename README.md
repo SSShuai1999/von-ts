@@ -41,7 +41,7 @@ Use `+` to Uppercase
 
 ```ts
 const m = von.match(`on-$A`, `on+$A`);
-const r6 = m.cast("onClick");
+const r6 = m.cast("on-click");
 //    ^^ : "onClick"
 ```
 
