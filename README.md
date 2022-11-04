@@ -33,7 +33,7 @@ Use `string` to match
 
 ```ts
 const m = von.match(`on-$A`, `on$A`);
-const r5 = m.cast("onclick");
+const r5 = m.cast("on-click");
 //    ^^ : "onclick"
 ```
 
