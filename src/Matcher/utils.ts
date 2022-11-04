@@ -1,4 +1,4 @@
-import { Matcher, matcherKeysMap, MStr, mstrLens, type ScopeType } from "./";
+import { Matcher, matcherKeysMap, MStr, mstrLen, type ScopeType } from "./";
 
 export const checkCastMode = (scope: Matcher<any>): keyof ScopeType => {
   if (Array.isArray(scope.input) && Array.isArray(scope.output)) {
@@ -34,11 +34,11 @@ export const linkRules = (mstrList: MStr[], input: MStr) => {
     const next = mstrList[idx + 1];
     if (next) {
       const nextOf = input.indexOf(next);
-      const del = input.slice(of + mstrLens, nextOf);
+      const del = input.slice(of + mstrLen, nextOf);
 
       result.right = del;
     } else {
-      result.right = input.slice(of + mstrLens);
+      result.right = input.slice(of + mstrLen);
     }
 
     linkRules[item] = result;

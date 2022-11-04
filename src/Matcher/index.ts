@@ -2,7 +2,8 @@ import { Any, Object as O, List, String } from "ts-toolbelt";
 import type { ArrayType } from "../typings";
 import { checkCastMode, linkRules, parseMstr, parseMStrMap } from "./utils";
 
-export const mstrLens = 2;
+export const mstrLen = 2;
+
 export const matcherKeysMap = [
   "$A",
   "$B",
@@ -44,6 +45,7 @@ export type QueryConstrType<T extends MatcherScope<any, any, any>> =
     : string;
 
 export type MStr = `${any}${MatcherKeys}${any}`;
+
 export type MStrMap = readonly any[] | any[] | `${any}${MatcherKeys}${any}`;
 
 export type DepMStrMap<_MStrMap extends MStrMap> = MStrMap;
@@ -121,33 +123,6 @@ type LinkRules<
     : Catch
   : Catch;
 
-type _ParseOriginByMStrMap<
-  PMSM extends ParseMStrMap<any, any>,
-  LinkR extends LinkRules<any, any>,
-  Origin extends string,
-  Catch extends Record<string, any> = {},
-> = PMSM extends []
-  ? Catch
-  : ArrayType.At<PMSM, 0> extends infer R1 extends string
-  ? R1 extends keyof LinkR
-    ? LinkR[R1] extends {
-        left: infer Left extends string;
-        right: infer Right extends string;
-      }
-      ? Origin extends `${Left}${infer A}${Right}${infer Other}`
-        ? Right extends ""
-          ? O.Merge<Catch, Record<R1, `${A}${Other}`>>
-          : _ParseOriginByMStrMap<
-              List.Remove<PMSM, 0, 0>,
-              LinkR,
-              Other,
-              O.Merge<Catch, Record<R1, A>>
-            >
-        : never
-      : Catch
-    : O.Merge<Catch, Record<R1, Origin>>
-  : Catch;
-
 type ReplaceOutput<
   PO extends Record<string, string>,
   PMSM extends ParseMStrMap<any, any>,
@@ -183,6 +158,33 @@ type ReplaceOutput<
       : ReplaceOutput<PO, R2, Output>
     : ReplaceOutput<PO, R2, Output>
   : Output;
+
+type _ParseOriginByMStrMap<
+  PMSM extends ParseMStrMap<any, any>,
+  LinkR extends LinkRules<any, any>,
+  Origin extends string,
+  Catch extends Record<string, any> = {},
+> = PMSM extends []
+  ? Catch
+  : ArrayType.At<PMSM, 0> extends infer R1 extends string
+  ? R1 extends keyof LinkR
+    ? LinkR[R1] extends {
+        left: infer Left extends string;
+        right: infer Right extends string;
+      }
+      ? Origin extends `${Left}${infer A}${Right}${infer Other}`
+        ? Right extends ""
+          ? O.Merge<Catch, Record<R1, `${A}${Other}`>>
+          : _ParseOriginByMStrMap<
+              List.Remove<PMSM, 0, 0>,
+              LinkR,
+              Other,
+              O.Merge<Catch, Record<R1, A>>
+            >
+        : never
+      : Catch
+    : O.Merge<Catch, Record<R1, Origin>>
+  : Catch;
 
 type ParseOriginByMStrMap<
   Scope extends MatcherScope<any, any, any>,
