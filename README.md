@@ -32,7 +32,27 @@ const r4 = m.cast("F");
 Use `string` to match
 
 ```ts
-const m = von.match(`on$A`, `on-$A`);
-const r1 = m.cast("onclick");
-//    ^^ : "on-click"
+const m = von.match(`on-$A`, `on$A`);
+const r5 = m.cast("onclick");
+//    ^^ : "onclick"
+```
+
+Use `+` to Uppercase
+
+```ts
+const m = von.match(`on-$A`, `on+$A`);
+const r6 = m.cast("onClick");
+//    ^^ : "onClick"
+```
+
+Use `-` to Lowercase
+
+```ts
+const m1 = von.match(`on-$A`, `on+$A`);
+const r7 = m1.cast("on-click");
+//    ^^ : "onClick"
+
+const m2 = von.match(`on$A`, `on-$A`);
+const r8 = m2.cast(r7);
+//    ^^ : "onclick"
 ```
