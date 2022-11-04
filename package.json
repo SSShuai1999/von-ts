@@ -1,7 +1,7 @@
 {
   "name": "von-ts",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "packageManager": "pnpm@7.2.1",
   "description": "Using tool types to ensuring type safety",
   "author": "ssshuai1999 <ssshuai1999@gmail.com>",
