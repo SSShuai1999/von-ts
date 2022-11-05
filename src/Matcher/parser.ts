@@ -5,47 +5,6 @@ import { LinkRules } from "./link";
 import { MStr } from "./mode";
 import { MScope } from "./scope";
 
-// type ReplaceOutput<
-//   PO extends Record<string, string>,
-//   PMSM extends ParseMStrMap<any, any>,
-//   Output,
-//   Config extends MScope<any, any, any>["Config"],
-// > = PMSM extends [infer R1 extends string, ...infer R2 extends string[]]
-//   ? R1 extends keyof PO
-//     ? Output extends `${any}++${R1}${any}`
-//       ? ReplaceOutput<
-//           PO,
-//           R2,
-//           S.Replace<Output, `++${R1}`, Uppercase<PO[R1]>>,
-//           Config
-//         >
-//       : Output extends `${any}+${R1}${any}`
-//       ? ReplaceOutput<
-//           PO,
-//           R2,
-//           S.Replace<Output, `+${R1}`, Capitalize<PO[R1]>>,
-//           Config
-//         >
-//       : Output extends `${any}--${R1}${any}`
-//       ? ReplaceOutput<
-//           PO,
-//           R2,
-//           S.Replace<Output, `--${R1}`, Lowercase<PO[R1]>>,
-//           Config
-//         >
-//       : Output extends `${any}-${R1}${any}`
-//       ? ReplaceOutput<
-//           PO,
-//           R2,
-//           S.Replace<Output, `-${R1}`, Uncapitalize<PO[R1]>>,
-//           Config
-//         >
-//       : Output extends `${any}${R1}${any}`
-//       ? ReplaceOutput<PO, R2, S.Replace<Output, R1, PO[R1]>, Config>
-//       : ReplaceOutput<PO, R2, Output, Config>
-//     : ReplaceOutput<PO, R2, Output, Config>
-//   : Output;
-
 type ReplaceOutput<
   PO extends Record<string, string>,
   PMSM extends ParseMStrMap<any, any>,
