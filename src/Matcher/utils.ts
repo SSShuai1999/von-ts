@@ -1,6 +1,12 @@
-import { Matcher, matcherKeysMap, MStr, mstrLen, type ScopeType } from "./";
+import { Matcher } from ".";
+import {
+  identifierLen,
+  IdentifierKeysMap,
+  identifierKeysMap,
+} from "./identifier";
+import type { ModeType, MStr } from "./mode";
 
-export const checkCastMode = (scope: Matcher<any>): keyof ScopeType => {
+export const checkCastMode = (scope: Matcher<any>): keyof ModeType => {
   if (Array.isArray(scope.input) && Array.isArray(scope.output)) {
     return "RAry";
   } else {
@@ -8,9 +14,9 @@ export const checkCastMode = (scope: Matcher<any>): keyof ScopeType => {
   }
 };
 
-export const parseMStrMap = (input: MStr, origin: MStr) => {
+export const parseMStrMap = (input: MStr) => {
   const mstrList = [] as MStr[];
-  matcherKeysMap.forEach((item) => {
+  identifierKeysMap.forEach((item) => {
     if (input.includes(item)) {
       mstrList.push(item);
     }
@@ -34,11 +40,11 @@ export const linkRules = (mstrList: MStr[], input: MStr) => {
     const next = mstrList[idx + 1];
     if (next) {
       const nextOf = input.indexOf(next);
-      const del = input.slice(of + mstrLen, nextOf);
+      const del = input.slice(of + identifierLen, nextOf);
 
       result.right = del;
     } else {
-      result.right = input.slice(of + mstrLen);
+      result.right = input.slice(of + identifierLen);
     }
 
     linkRules[item] = result;
@@ -54,7 +60,7 @@ export const parseMstr = (lRules: any, origin: MStr) => {
     const itemRule = lRules[item as any as MStr];
     if (itemRule) {
       if (itemRule["right"] !== "") {
-        const hasMstr = matcherKeysMap.find((item) =>
+        const hasMstr = identifierKeysMap.find((item) =>
           itemRule["left"].includes(item),
         );
         if (hasMstr) {
@@ -71,7 +77,7 @@ export const parseMstr = (lRules: any, origin: MStr) => {
           parserResult[item] = result;
         }
       } else {
-        const hasMstr = matcherKeysMap.find((item) =>
+        const hasMstr = identifierKeysMap.find((item) =>
           itemRule["left"].includes(item),
         );
 

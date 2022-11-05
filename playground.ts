@@ -1,6 +1,8 @@
 import { von } from "./src";
 
-const m = von.match(`$A-$B`, `$A$B`);
-const r1 = m.cast("on-click");
+const m = von.match(`$A-$B`, `$A$B`, {
+  capitalize: ["$B"],
+} as const);
 
-console.log({ r1 });
+const r1 = m.cast("on-click");
+//    ^^ const r1: "onClick"

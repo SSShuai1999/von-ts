@@ -117,3 +117,17 @@ export type GetPrimitivesByKey<T extends PrimitivesKeys> = StrPrimitivesMap[T];
 export type Special = "literal";
 
 export type DefProps = PrimitivesKeys | Special;
+
+export type ConverBrand = {
+  "_++": "_++";
+  "_--": "_--";
+  "_+": "_+";
+  "_-": "_-";
+};
+
+export type convertCaseSym = {
+  "++": string & ConverBrand["_++"];
+  "--": string & ConverBrand["_--"];
+  "+": string & ConverBrand["_++"];
+  "-": string & ConverBrand["_-"];
+};

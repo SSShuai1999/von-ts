@@ -1,5 +1,9 @@
 {
     "editor.formatOnSave": true,
     "editor.suggest.snippetsPreventQuickSuggestions": false,
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "debug.console.fontFamily": "inputMono",
+    "scm.inputFontFamily": "inputMono",
+    "editor.fontFamily": "inputMono",
+    "editor.codeLensFontFamily": "inputMono"
 }
