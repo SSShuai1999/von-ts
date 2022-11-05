@@ -1,9 +1,5 @@
-import { Matcher } from ".";
-import {
-  identifierLen,
-  IdentifierKeysMap,
-  identifierKeysMap,
-} from "./identifier";
+import { Matcher } from "./core";
+import { identifierLen, identifierKeysMap } from "./identifier";
 import type { ModeType, MStr } from "./mode";
 
 export const checkCastMode = (scope: Matcher<any>): keyof ModeType => {
