@@ -1,1 +1,2 @@
-export * as ArrayType from "./Array";
+export * as HelperArray from "./array-api";
+export * from "./helper";

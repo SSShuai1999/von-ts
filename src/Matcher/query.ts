@@ -1,4 +1,4 @@
-import { MScope } from "./scope";
+import type { MScope } from "./scope";
 
 export type QueryConstrType<T extends MScope<any, any, any>> =
   T["Input"] extends any[]

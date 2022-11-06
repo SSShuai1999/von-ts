@@ -1,17 +1,18 @@
-import { Matcher } from "./core";
+import type { Matcher } from "./core";
+import type { ModeType, StrId } from "./mode";
+
 import { identifierLen, identifierKeysMap } from "./identifier";
-import type { ModeType, MStr } from "./mode";
 
 export const checkCastMode = (scope: Matcher<any>): keyof ModeType => {
   if (Array.isArray(scope.input) && Array.isArray(scope.output)) {
-    return "RAry";
+    return "RoMap";
   } else {
-    return "MStr";
+    return "StrId";
   }
 };
 
-export const parseMStrMap = (input: MStr) => {
-  const mstrList = [] as MStr[];
+export const parseStrIdMap = (input: StrId) => {
+  const mstrList = [] as StrId[];
   identifierKeysMap.forEach((item) => {
     if (input.includes(item)) {
       mstrList.push(item);
@@ -21,8 +22,8 @@ export const parseMStrMap = (input: MStr) => {
   return mstrList;
 };
 
-export const linkRules = (mstrList: MStr[], input: MStr) => {
-  const linkRules = {} as Record<MStr, { left: string; right: string }>;
+export const linkRules = (mstrList: StrId[], input: StrId) => {
+  const lRules = {} as Record<StrId, { left: string; right: string }>;
 
   mstrList.forEach((item, idx) => {
     const result = { left: "", right: "" };
@@ -43,17 +44,17 @@ export const linkRules = (mstrList: MStr[], input: MStr) => {
       result.right = input.slice(of + identifierLen);
     }
 
-    linkRules[item] = result;
+    lRules[item] = result;
   });
 
-  return linkRules;
+  return lRules;
 };
 
-export const parseMstr = (lRules: any, origin: MStr) => {
+export const parseMstr = (lRules: any, origin: StrId) => {
   const parserResult = {} as any;
 
   Object.keys(lRules).forEach((item) => {
-    const itemRule = lRules[item as any as MStr];
+    const itemRule = lRules[item as any as StrId];
     if (itemRule) {
       if (itemRule["right"] !== "") {
         const hasMstr = identifierKeysMap.find((item) =>
@@ -68,8 +69,8 @@ export const parseMstr = (lRules: any, origin: MStr) => {
           const rightOf = result.indexOf(itemRule["right"]);
           parserResult[item] = result.slice(0, rightOf);
         } else {
-          const newMStr = origin.slice(0, origin.indexOf(itemRule["right"]));
-          const result = newMStr.slice(itemRule["left"]["length"]);
+          const newStrId = origin.slice(0, origin.indexOf(itemRule["right"]));
+          const result = newStrId.slice(itemRule["left"]["length"]);
           parserResult[item] = result;
         }
       } else {

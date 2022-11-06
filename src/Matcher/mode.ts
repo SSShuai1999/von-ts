@@ -1,13 +1,34 @@
-import { IdentifierKeys } from "./identifier";
+import type { IdentifierKeys } from "./identifier";
 
-export type MStr = `${any}${IdentifierKeys}${any}`;
+export type StrId = `${any}${IdentifierKeys}${any}`;
 
-export type MStrMap = readonly any[] | any[] | `${any}${IdentifierKeys}${any}`;
+export type StrId_Upper = `++${IdentifierKeys}`;
 
-export type DepMStrMap<_MStrMap extends MStrMap> = MStrMap;
+export type StrId_Cap = `+${IdentifierKeys}`;
 
-// RAry = Readonly any[], MStr = a string containing a match
+export type StrId_Lower = `--${IdentifierKeys}`;
+
+export type StrId_UnCap = `-${IdentifierKeys}`;
+
+export type StrId_All_Convert =
+  | StrId_Upper
+  | StrId_Cap
+  | StrId_Lower
+  | StrId_UnCap;
+
+export type StrIdMap = readonly any[] | any[] | `${any}${IdentifierKeys}${any}`;
+
+export type DepStrIdMap<_StrIdMap extends StrIdMap> = StrIdMap;
+
 export type ModeType = {
-  RAry: "RAry";
-  MStr: "MStr";
+  // readonly map
+  RoMap: "RoMap";
+
+  // string identifier
+  StrId: "StrId";
+};
+
+export const MODE_TYPE: ModeType = {
+  RoMap: "RoMap",
+  StrId: "StrId",
 };

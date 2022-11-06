@@ -1,4 +1,4 @@
-import { O } from "ts-toolbelt";
+import type { Object as O } from "ts-toolbelt";
 
 export type LinkRules<
   T extends any[],
@@ -29,3 +29,9 @@ export type LinkRules<
     ? O.Merge<Catch, Record<R1, { left: RR1; right: RR2 }>>
     : Catch
   : Catch;
+
+function fn(num: number): void {
+  if (num === 0) {
+    throw "error: can't deal with 0";
+  }
+}

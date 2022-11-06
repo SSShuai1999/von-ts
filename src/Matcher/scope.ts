@@ -1,12 +1,10 @@
-import { MStr } from "./mode";
+import type { StrId_All_Convert } from "./mode";
 
 export type MScopeConfig = {
-  conver?: {
-    uppercase?: readonly MStr[];
-  };
+  convert?: readonly StrId_All_Convert[];
 };
 
-export type MScope<I, O, C> = {
+export type MScope<I, O, C extends MScopeConfig> = {
   Input: I;
   Output: O;
   Config: C;
